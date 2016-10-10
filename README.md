@@ -1,0 +1,2 @@
+# ATG
+ALGORYTMICZNA TEORIA GRAFÓW (semestr zimowy 2016/1017)
