@@ -10,8 +10,8 @@ class Matrix
   end
 end
 
-# matrix = Matrix.empty(0,0)
-$matrix = Matrix.build(3, 3) {|row, col| 0 }
+$matrix = Matrix.empty(0,0)
+#$matrix = Matrix.build(3, 3) {|row, col| 0 }
 
 # zarzadzanie wierzcholkami
 def addVertex
@@ -42,8 +42,8 @@ end
 # zarzadzanie krawedziami
 def addEdge(row, col)
   checkIndex([row,col])
-  $matrix.[]=(row, col, 1)
-  $matrix.[]=(col, row, 1)
+  $matrix.[]=(row-1, col-1, 1)
+  $matrix.[]=(col-1, row-1, 1)
 end
 
 def remEdge(row, col)
@@ -54,7 +54,7 @@ end
 # tools
 def checkIndex(arr)
   arr.each do |i|
-    raise Matrix::ErrDimensionMismatch("blin") if i > $matrix.row_size || i < 0
+    raise IndexError if i > $matrix.row_size || i < 0
   end
 end
 
@@ -66,6 +66,7 @@ def printMatrix
   i = $matrix.row_size
   j = $matrix.column_size
   puts "i = #{i.to_s}"
+
   puts "j = #{j.to_s}"
   puts $matrix.to_s
 end
@@ -76,20 +77,65 @@ def showStats
   $matrix.to_a.each do |row|
     rank = 0
     row.each do |i|
-      rank = rank + i
+      rank += i
     end
     ranks << rank
   end
+  even = 0
+  odd = 0
+  ranks.each do |e|
+    if e.even?
+      even += 1
+    else
+      odd += 1
+    end
+  end
+
   puts "----- STATS -----"
   puts "Ranks: #{ranks.to_s}"
-  puts "MinRank: #{ranks.min}"
-  puts "MaxRank: #{ranks.max}"
+  puts "Ranks (sorted): #{ranks.sort {|x,y| y <=> x }}"
+  puts "Min rank: #{ranks.min}"
+  puts "Max rank: #{ranks.max}"
+  puts "Odd ranks: #{odd}"
+  puts "Even ranks: #{even}"
 end
+
+# 1.2 W oparciu o reprezentacje grafu w postaci macierzy sasiedztwa zaimplementuj procedure, ktora sprawdza, czy graf zawiera podgraf izomorficzny do cyklu C3.
+$c3graph = Matrix.rows([[0,1,1,0],[1,0,1,0],[1,1,0,0],[0,0,0,0]])
+puts "c3" + $c3graph.to_s
+def c3naive
+
+end
+
+def c3multiply
+
+end
+
+# 1.3a Zaimplementuj procedure sprawdzajaca, czy dany (nierosnacy) ciag liczb naturalnych jest ciagiem grafowym.
+def graphSequence
+
+end
+
+#1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujący ten ciag.
+def simpleGraphBySequence
+
+end
+
+
 
 # MAIN
 
 addVertex
+addVertex
+addVertex
+addVertex
 addEdge(1,2)
-#remVertex 2
+addEdge(1,3)
+addEdge(2,3)
+addEdge(2,4)
+addEdge(3,4)
+
 printMatrix
 showStats
+puts "------ tst -------"
+puts $matrix * $matrix
