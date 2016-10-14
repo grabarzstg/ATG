@@ -1,4 +1,4 @@
-#!/usr/local/ruby/bin/ruby 
+#!/usr/local/ruby/bin/ruby
 # encoding: utf-8
 #RUBY_VERSION# 1.9.3
 
@@ -10,7 +10,7 @@ class Matrix
   end
 end
 
-$matrix = Matrix.empty(0,0) 
+$matrix = Matrix.empty(0,0)
 
 # zarzadzanie wierzcholkami
 def addVertex
@@ -61,6 +61,7 @@ def nextIndex
 end
 
 def printMatrix
+  # TODO: stworzyc ladne rysowanie macierzy w konsoli
   i = $matrix.row_size
   j = $matrix.column_size
   puts "i = #{i.to_s}"
@@ -70,7 +71,7 @@ def printMatrix
 end
 
 def showStats
-  # TODO: wyznaczenie stopnia wierzcholka oraz minimalnego i maksymalnego stopnia grafu, wyznaczenie, ile jest wierzcholkow stopnia parzystego i nieparzystego
+  # wyznaczenie stopnia wierzcholka oraz minimalnego i maksymalnego stopnia grafu, wyznaczenie, ile jest wierzcholkow stopnia parzystego i nieparzystego
   ranks = Array.new
   $matrix.to_a.each do |row|
     rank = 0
@@ -99,19 +100,33 @@ def showStats
 end
 
 # 1.2 W oparciu o reprezentacje grafu w postaci macierzy sasiedztwa zaimplementuj procedure, ktora sprawdza, czy graf zawiera podgraf izomorficzny do cyklu C3.
-$c3graph = Matrix.rows([[0,1,1,0],[1,0,1,0],[1,1,0,0],[0,0,0,0]])
-puts "c3" + $c3graph.to_s
-def c3naive
-  # TODO: sprawdzamy wszystkie trojki
+def c3naive?(matrix)
+  arr = Array.new($matrix.row_size){ |index| index + 1}
+  arr.permutation(3).each do |e|
+    return true if matrix.element(e[0],e[1]) == 1 && matrix.element(e[0],e[2]) == 1 && matrix.element(e[1],e[2]) == 1
+  end
+  return false
 end
 
-def c3multiply
-  # TODO: A^3 jezeli Matrix.trace() >0 to C3 = true
+def c3multiply?(matrix)
+  a3 = matrix * matrix * matrix
+  return true if (a3.trace > 0)
+  return false
 end
 
 # 1.3a Zaimplementuj procedure sprawdzajaca, czy dany (nierosnacy) ciag liczb naturalnych jest ciagiem grafowym.
-def graphSequence
-  sequence = [3,3,2,2] # [3,3,2,1]
+def graphSequence(sequence)
+  sequence.sort! {|x,y| y <=> x }
+  puts "mlem: #{sequence.to_s}"
+  return true if sequence[0] <= 0
+  1.upto(sequence[0]) do |i|
+    sequence[i] = sequence[i] - 1
+  end
+  sequence.delete_at(0)
+  sequence.each do |e|
+    return false if e < 0
+  end
+  graphSequence(sequence)
 end
 
 #1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujacy ten ciag.
@@ -127,13 +142,17 @@ addVertex
 addVertex
 addVertex
 addVertex
+addVertex
 addEdge(1,2)
 addEdge(1,3)
 addEdge(2,3)
 addEdge(2,4)
 addEdge(3,4)
-
+addEdge(4,5)
 printMatrix
 showStats
 puts "------ tst -------"
-puts $matrix * $matrix
+puts c3naive?($matrix)
+puts c3multiply?($matrix)
+
+puts graphSequence([3,3,2,2])
