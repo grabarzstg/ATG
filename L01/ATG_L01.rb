@@ -1,4 +1,4 @@
-#!/usr/local/ruby/bin/ruby
+#!/usr/local/ruby/bin/ruby 
 # encoding: utf-8
 #RUBY_VERSION# 1.9.3
 
@@ -10,8 +10,7 @@ class Matrix
   end
 end
 
-$matrix = Matrix.empty(0,0)
-#$matrix = Matrix.build(3, 3) {|row, col| 0 }
+$matrix = Matrix.empty(0,0) 
 
 # zarzadzanie wierzcholkami
 def addVertex
@@ -29,7 +28,6 @@ def addVertex
 end
 
 def remVertex(index)
-  # arr.delete_at usuniecie kolumny
   arr = $matrix.transpose.to_a
   arr.each do |row|
     row.delete_at index
@@ -72,7 +70,7 @@ def printMatrix
 end
 
 def showStats
-  # TODO: wyznaczenie stopnia wierzchołka oraz minimalnego i maksymalnego stopnia grafu, wyznaczenie, ile jest wierzchołków stopnia parzystego i nieparzystego
+  # TODO: wyznaczenie stopnia wierzcholka oraz minimalnego i maksymalnego stopnia grafu, wyznaczenie, ile jest wierzcholkow stopnia parzystego i nieparzystego
   ranks = Array.new
   $matrix.to_a.each do |row|
     rank = 0
@@ -104,19 +102,19 @@ end
 $c3graph = Matrix.rows([[0,1,1,0],[1,0,1,0],[1,1,0,0],[0,0,0,0]])
 puts "c3" + $c3graph.to_s
 def c3naive
-
+  # TODO: sprawdzamy wszystkie trojki
 end
 
 def c3multiply
-
+  # TODO: A^3 jezeli Matrix.trace() >0 to C3 = true
 end
 
 # 1.3a Zaimplementuj procedure sprawdzajaca, czy dany (nierosnacy) ciag liczb naturalnych jest ciagiem grafowym.
 def graphSequence
-
+  sequence = [3,3,2,2] # [3,3,2,1]
 end
 
-#1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujący ten ciag.
+#1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujacy ten ciag.
 def simpleGraphBySequence
 
 end
