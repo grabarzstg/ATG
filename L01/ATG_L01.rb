@@ -130,10 +130,26 @@ def graphSequence(sequence)
 end
 
 #1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujacy ten ciag.
-def simpleGraphBySequence
+def simpleGraphBySequence(sequence)
+  sequence.each_with_index do |e, i| 
+    if e > 0
+      mv = 1 #przesuniecie 
+      puts "e #{e} | i #{i}"
+      sequence[i] -= 1
+      if sequence[i+mv] > 0 
+        sequence  #iterate
+      else
+        mv += 1
+      end
 
+      puts sequence.to_s
+    else
+      next
+    end
+  end
 end
 
+def iterate #nazwa robocza
 
 
 # MAIN
@@ -156,3 +172,4 @@ puts c3naive?($matrix)
 puts c3multiply?($matrix)
 
 puts graphSequence([3,3,2,2])
+simpleGraphBySequence([3,3,2,2])
