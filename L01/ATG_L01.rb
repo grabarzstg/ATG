@@ -60,14 +60,14 @@ def nextIndex
   return $matrix.row_size + 1
 end
 
-def printMatrix
+def printMatrix(matrix)
   # TODO: stworzyc ladne rysowanie macierzy w konsoli
-  i = $matrix.row_size
-  j = $matrix.column_size
-  puts "i = #{i.to_s}"
-
-  puts "j = #{j.to_s}"
-  puts $matrix.to_s
+  i = matrix.row_size
+  j = matrix.column_size
+  puts "----------"
+  matrix.to_a.each do |row|
+    puts row.to_s
+  end
 end
 
 def showStats
@@ -131,45 +131,60 @@ end
 
 #1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujacy ten ciag.
 def simpleGraphBySequence(sequence)
-  sequence.each_with_index do |e, i| 
-    if e > 0
-      mv = 1 #przesuniecie 
-      puts "e #{e} | i #{i}"
-      sequence[i] -= 1
-      if sequence[i+mv] > 0 
-        sequence  #iterate
-      else
-        mv += 1
-      end
+  $matrix = Matrix.empty(0,0)
+  1.upto(sequence.length) {addVertex}
+  mv = 1
+  while sequence.inject(0){|sum,x| sum + x } > 0
 
-      puts sequence.to_s
-    else
-      next
+    sequence.each_with_index do |e, i|
+      if e > 0
+        #puts "e #{e} | i #{i}"
+        iterate(sequence, i, mv)
+        puts sequence.to_s
+      end
     end
   end
+  printMatrix($matrix)
 end
 
-def iterate #nazwa robocza
-
-
+def iterate (sequence, i, mv)#nazwa robocza
+  #printMatrix($matrix)
+  puts "i: #{i} i+mv #{i+mv}"
+  case
+  when i+mv >= sequence.length
+    #addEdge(sequence.length, 1)
+    #sequence[i] -= 1
+    #sequence[0] -= 1
+    sequence = iterate(sequence, i, (sequence.length-1)*(-1))
+  when sequence[i+mv] > 0
+    addEdge(i+1, i+mv+1)
+    sequence[i] -= 1
+    sequence[i+mv] -= 1
+  else
+    puts "nyet"
+    sequence = iterate(sequence, i, mv + 1)
+  end
+  return sequence
+end
 # MAIN
 
 addVertex
 addVertex
 addVertex
 addVertex
-addVertex
 addEdge(1,2)
-addEdge(1,3)
 addEdge(2,3)
-addEdge(2,4)
 addEdge(3,4)
-addEdge(4,5)
-printMatrix
-showStats
-puts "------ tst -------"
-puts c3naive?($matrix)
-puts c3multiply?($matrix)
+addEdge(1,4) #
+#addEdge(1,3)
 
-puts graphSequence([3,3,2,2])
-simpleGraphBySequence([3,3,2,2])
+
+#addEdge(2,4)
+#printMatrix($matrix)
+#showStats
+#puts "------ tst -------"
+#puts c3naive?($matrix)
+#puts c3multiply?($matrix)
+
+puts graphSequence([3,3,3,3])
+simpleGraphBySequence([3,3,3,3])
