@@ -13,18 +13,19 @@ end
 $matrix = Matrix.empty(0,0)
 
 # zarzadzanie wierzcholkami
-def addVertex
+def addVertex(matrix)
   row = Array.new
-  (1..$matrix.row_size).each do
+  (1..matrix.row_size).each do
     row << 0
   end
   col = Array.new
-  (0..$matrix.column_size).each do
+  (0..matrix.column_size).each do
     col << 0
   end
-  $matrix = Matrix.rows($matrix.transpose.to_a << row)
-  $matrix = Matrix.columns($matrix.transpose.to_a << col)
-  $matrix.normal? #sprawdzenie czy macierz jest poprawnego rozmiaru
+  matrix = Matrix.rows(matrix.transpose.to_a << row)
+  matrix = Matrix.columns(matrix.transpose.to_a << col)
+  matrix.normal? #sprawdzenie czy macierz jest poprawnego rozmiaru
+  return matrix
 end
 
 def remVertex(index)
@@ -38,10 +39,11 @@ def remVertex(index)
 end
 
 # zarzadzanie krawedziami
-def addEdge(row, col)
-  checkIndex([row,col])
-  $matrix.[]=(row-1, col-1, 1)
-  $matrix.[]=(col-1, row-1, 1)
+def addEdge(matrix, row, col)
+  raise IndexError if row > matrix.row_size || row < 0 || col > matrix.row_size || col < 0
+  matrix.[]=(row-1, col-1, 1)
+  matrix.[]=(col-1, row-1, 1)
+  return matrix
 end
 
 def remEdge(row, col)
@@ -49,12 +51,7 @@ def remEdge(row, col)
   $matrix.[]=(col, row, 0)
 end
 
-# tools
-def checkIndex(arr)
-  arr.each do |i|
-    raise IndexError if i > $matrix.row_size || i < 0
-  end
-end
+
 
 def nextIndex
   return $matrix.row_size + 1
@@ -131,51 +128,44 @@ end
 
 #1.3b Zaimplementuj procedure, ktora w przypadku odpowiedzi pozytywnej na punkt (a) zwroci (jakikolwiek) graf prosty (w postaci macierzy sasiedztwa) realizujacy ten ciag.
 def simpleGraphBySequence(sequence)
-  $matrix = Matrix.empty(0,0)
-  1.upto(sequence.length) {addVertex}
-  mv = 1
-  while sequence.inject(0){|sum,x| sum + x } > 0
+  #przygotowanie pustej macierzy
+  matrix = Matrix.empty(0,0)
+  1.upto(sequence.length) {matrix = addVertex(matrix)}
+  #sequence.sort! {|x,y| y <=> x }
 
-    sequence.each_with_index do |e, i|
-      if e > 0
-        #puts "e #{e} | i #{i}"
-        iterate(sequence, i, mv)
-        puts sequence.to_s
+  1.upto(sequence.length) do
+    id = sequence.index(sequence.max)
+    puts "#{sequence} #{id} #{sequence.max}"
+    1.upto(sequence[id]) do |mv|
+
+      if (id + mv + 1) <= sequence.length
+        puts "#id: #{id+1}, mv: #{mv}, idmv: #{id+mv+1} ,sl: #{sequence.length}"
+        matrix = addEdge(matrix, id+1, id + mv + 1)
+        sequence[id] -= 1
+        sequence[id+mv] -= 1
+      else
+        puts "#id: #{id+1}, mv: #{mv}, idmv: #{id+mv+1} ,sl: #{sequence.length}"
+        mv = sequence.length - (mv + id+1)
+        puts "AOI - new mv: #{mv}, idmv: #{id+mv+1} "
+        matrix = addEdge(matrix, id+1, id + mv+1)
+        sequence[id] -= 1
+        sequence[id+mv] -= 1
       end
     end
   end
-  printMatrix($matrix)
+  printMatrix(matrix)
 end
 
-def iterate (sequence, i, mv)#nazwa robocza
-  #printMatrix($matrix)
-  puts "i: #{i} i+mv #{i+mv}"
-  case
-  when i+mv >= sequence.length
-    #addEdge(sequence.length, 1)
-    #sequence[i] -= 1
-    #sequence[0] -= 1
-    sequence = iterate(sequence, i, (sequence.length-1)*(-1))
-  when sequence[i+mv] > 0
-    addEdge(i+1, i+mv+1)
-    sequence[i] -= 1
-    sequence[i+mv] -= 1
-  else
-    puts "nyet"
-    sequence = iterate(sequence, i, mv + 1)
-  end
-  return sequence
-end
+
 # MAIN
-
-addVertex
-addVertex
-addVertex
-addVertex
-addEdge(1,2)
-addEdge(2,3)
-addEdge(3,4)
-addEdge(1,4) #
+#addVertex($matrix)
+#addVertex($matrix)
+#addVertex($matrix)
+#addVertex($matrix)
+#$matrix = addEdge($matrix,1,2)
+#$matrix = addEdge($matrix,2,3)
+#$matrix = addEdge($matrix,3,4)
+#$matrix = addEdge($matrix,1,4) #
 #addEdge(1,3)
 
 
@@ -186,5 +176,7 @@ addEdge(1,4) #
 #puts c3naive?($matrix)
 #puts c3multiply?($matrix)
 
-puts graphSequence([3,3,3,3])
+#puts graphSequence([3,3,3,3])
+
+
 simpleGraphBySequence([3,3,3,3])
