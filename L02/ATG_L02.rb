@@ -79,15 +79,35 @@ def getCycle(graph, cycle = Array.new, i = 0)
       graph = remEdge(graph, i, index)
       getCycle(graph, cycle, index)
       break
-    end
+    end 
   end
   return cycle
 end
 
+# prosta implementacja
 def jordan(graph)
-
+  ranks = getRanks(graph)
+  puts ranks.to_s
+  ranks.each_with_index  do |rank, index|
+    graph = remVertex(graph, index) if rank == 1
+    puts index if rank == 1
+  end
+  ranks = getRanks(graph)
+  puts ranks.to_s
+  #jordan(graph) if graph.to_a.size > 2
 end
 
+def getRanks(graph)
+  ranks = Array.new
+  graph.to_a.each do |row|
+    rank = 0
+    row.each do |i|
+      rank += i
+    end
+    ranks << rank
+  end
+  return ranks
+end
 
 graph = Matrix.empty(0,0)
 graph = addVertex(graph)
@@ -98,6 +118,24 @@ graph = addEdge(graph,1,2)
 graph = addEdge(graph,2,3)
 graph = addEdge(graph,3,4)
 graph = addEdge(graph,4,1)
-
 printMatrix(graph)
 putsd getCycle(graph)
+
+puts "======END======"
+
+# 1-2-3-4-5
+graph = Matrix.empty(0,0)
+graph = addVertex(graph)
+graph = addVertex(graph)
+graph = addVertex(graph)
+graph = addVertex(graph)
+graph = addVertex(graph)
+
+
+graph = addEdge(graph,1,2)
+graph = addEdge(graph,2,3)
+graph = addEdge(graph,3,4)
+graph = addEdge(graph,4,5)
+#printMatrix(graph)
+putsd jordan(graph)
+
