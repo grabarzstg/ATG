@@ -89,12 +89,18 @@ def jordan(graph)
   ranks = getRanks(graph)
   puts ranks.to_s
   ranks.each_with_index  do |rank, index|
-    graph = remVertex(graph, index) if rank == 1
-    puts index if rank == 1
+	if rank == 1
+	  0.upto(graph.row_size-1) do |i|
+		graph = remEdge(graph, index, i)
+		ranks[index] = 0
+		puts index+1	
+	  end
+	end
   end
   ranks = getRanks(graph)
   puts ranks.to_s
-  #jordan(graph) if graph.to_a.size > 2
+  jordan(graph) if graph.inject(:+) > 4
+  return ranks.each_with_index.max
 end
 
 def getRanks(graph)
@@ -130,12 +136,13 @@ graph = addVertex(graph)
 graph = addVertex(graph)
 graph = addVertex(graph)
 graph = addVertex(graph)
-
+graph = addVertex(graph)
 
 graph = addEdge(graph,1,2)
 graph = addEdge(graph,2,3)
 graph = addEdge(graph,3,4)
 graph = addEdge(graph,4,5)
+graph = addEdge(graph,5,6)
 #printMatrix(graph)
-putsd jordan(graph)
+puts "Centrum drzewa: #{jordan(graph)}"
 
