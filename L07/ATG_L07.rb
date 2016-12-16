@@ -69,17 +69,49 @@ def visit (node, graph, order)
   end
 end
 
-def shortest(order)
-  distances = Array.new
-  distances << 0
-  (order.length-1).times {distances << Float::INFINITY}
-  puts distances
-
-  1.upto(order.length) do |i|
-    #TODO: distances[i] = min()
+def shortest(order, dw = Hash.new(Float::INFINITY))
+  source = order[0]
+  dw["#{source.id}#{source.id}"] = 0
+  if order.length > 2
+    dw["#{source.id}#{order[1].id}"] = w(source, order[1])
+    2.upto(order.length-1) do |i|
+      puts dw
+      #puts "dw[#{source.id}#{order[i].id}] = [dw[#{source.id}#{order[i-1].id}] + w(#{order[i-1].id}, #{order[i].id}) , dw[#{source.id}#{order[i-2].id}] + w(#{order[i-2].id}, #{order[i].id})].min"
+      #TODO: dodac opcje dla wiecej nizeli 2 sciezek wchodzacych do wezla
+      dw["#{source.id}#{order[i].id}"] = [dw["#{source.id}#{order[i-1].id}"] + w(order[i-1], order[i]), dw["#{source.id}#{order[i-2].id}"] + w(order[i-2], order[i])].min
+    end
   end
-
+  newOrder = order
+  newOrder.delete_at(0)
+  shortest(newOrder, dw) if newOrder.length > 1 #spodziewane 21 elementow
+  return dw #dw["#{source.id}#{order[-1].id}"]
 end
+
+def longest(order)
+  newOrder = invertCosts(order)
+  return shortest(newOrder)["#{order[0].id}#{order[-1].id}"]*(-1)
+end
+
+def w(node1, node2)
+  node1.arcs.each do |a|
+    return a.cost if a.target == node2.id
+  end
+  node2.arcs.each do |a|
+    return a.cost if a.target == node1.id
+  end
+  return Float::INFINITY
+end
+
+def invertCosts(order)
+  newOrder = order
+  newOrder.each do |node|
+    node.arcs.each do |arc|
+      arc.cost = arc.cost*(-1)
+    end
+  end
+  return newOrder
+end
+
 
 # ===== MAIN =====
 digraph = Array.new
@@ -90,5 +122,15 @@ digraph << Node.new('b', [Arc.new('d', 1), Arc.new('e', -2)])
 digraph << Node.new('d', [Arc.new('e', 1)])
 digraph << Node.new('e')
 
-topOrder = dfs(digraph).each {|x| puts x.to_s}
-shortest(topOrder)
+topOrder = dfs(digraph).each {|x| putsd x.id}
+dw = shortest(topOrder)
+#minimalny czas realizacji calego przedsiewziecia rowny jest Dw(s, t);
+minimal = dw["#{topOrder[0].id}#{topOrder[-1].id}"]
+puts "Dw(s, t): #{minimal}"
+dw.each do |key, val|
+  puts "Arc(#{key}):\n\tearliest: #{val}"
+  #puts "\tlatest: #{minimal - dw["#{}#{}"] - val }"
+end
+puts dw
+
+longest(topOrder)
