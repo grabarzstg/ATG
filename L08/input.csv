@@ -1,0 +1,11 @@
+u,v,capacity,u_source,v_target
+A,B,3,true,false
+A,D,3,true,false
+B,C,4,false,false
+C,A,3,false,false
+C,D,1,false,false
+C,E,2,false,false
+D,E,2,false,false
+D,F,6,false,false
+E,G,1,false,true
+F,G,9,false,true
