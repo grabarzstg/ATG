@@ -1,5 +1,15 @@
 require 'csv'
 
+def putsa
+  return 0
+  0.upto($n-1) do |i|
+    0.upto($n-1) do |j|
+      print "#{$a[[i,j]]}, "
+    end
+    puts ""
+  end
+end
+
 def DFSb (v, vf)
     low = 0
     temp = 0
@@ -10,8 +20,8 @@ def DFSb (v, vf)
     $cv = $cv + 1
 
     while (i < $n)
-      if ($a[v][i] && (i != vf))
-        if (!$d[i])
+      if (($a[[v,i]] > 0) && (i != vf))
+        if ($d[i] == 0)
           temp = DFSb(i, v)
           low = temp if (temp < low)
         else
@@ -21,8 +31,8 @@ def DFSb (v, vf)
       i = i + 1
     end
     if ((vf > -1) && (low = $d[v]))
-      $a[vf][v] = 2
-      $a[v][vf] = 2
+      $a[[vf,v]] = 2
+      $a[[v,vf]] = 2
     end
     return low
 end
@@ -33,12 +43,13 @@ def findEuler(v)
   w = 0
   #i = 0
   while true
-    $sptr = $sptr + 1
     $s[$sptr] = v
-    puts $a.to_s; #sleep(5)
-    puts "u: #{u} n: #{$n} v: #{v} u: #{u} a[v][u]: #{$a[v][u]} sprt: #{$sptr}"
+    $sptr = $sptr + 1
+    #$s.push(v)
+    #puts $a.to_s; #sleep(5)
+    puts "u: #{u} n: #{$n} v: #{v} u: #{u} a[v][u]: #{$a[[v,u]]} sprt: #{$sptr}"
     u = 0
-    while ((u < $n) && ($a[v][u] != 0)) #potencjalny problem
+    while ((u < $n) && ($a[[v,u]] == 0)) #potencjalny problem
       u = u + 1
     end
     puts "u: #{u}"
@@ -52,18 +63,19 @@ def findEuler(v)
 
     $cv = 1
     DFSb(v, -1)
-
+    putsa
     w = u + 1
-    while (($a[v][u] == 2) && (w < $n))
-      u = w if ($a[v][w])
+    while (($a[[v,u]] == 2) && (w < $n))
+      u = w if ($a[[v,w]] > 0)
       w = w + 1
     end
-    $a[v][u] = 0
-    $a[u][v] = 0
+    $a[[v,u]] = 0
+    $a[[u,v]] = 0
     v = u
     mlem = mlem + 1
-    exit 1 if mlem == 10
+    exit 1 if mlem == 50
   end
+
 end
 
 
@@ -85,15 +97,16 @@ v1 = 0
 v2 = 0
 vd = 0
 
-filepath = "./input.csv"
-
+filepath = "./input_trywialny.csv"
+#filepath = "./input_cykl.csv"
+#filepath = "./input_sciezka.csv"
 #wczytanie liczby krawedzi i wierzcholkow
 $n = CSV.read(filepath)[0][0].to_i
 $m = CSV.read(filepath)[0][1].to_i
 
 #tworzenie macierzy sasiedztwa i wypelnianie zerami
-$a = Array.new($n, Array.new($n, 0))
-
+#$a = Array.new($n, Array.new($n, 0))
+$a = Hash.new(0)
 #tworzenie i zerowanie tablicy stopni
 vd = Array.new($n, 0)
 
@@ -103,11 +116,7 @@ $d = Array.new($n)
 #pusty stos
 $s = Array.new #($m+1)
 
-puts $a.to_s
-$a[0][0] = 1
-puts $a.to_s
-exit 0
-
+#puts $a.to_s
 #definicje krawedzi
 $counter = -1
 options = {:headers => false}
@@ -117,23 +126,22 @@ CSV.foreach(filepath, options) do |a, b|
   next if $counter == 0
   v1 = a.to_i ; v2 = b.to_i
   puts "#{v1} - #{v2}"
-  $a[v1[v2]] = 1
-  $a[v2[v1]] = 1
+  $a[[v1,v2]] = 1
+  $a[[v2,v1]] = 1
   vd[v1] = vd[v1] + 1
   vd[v2] = vd[v2] + 1
-  puts $a.to_s
 end
-puts $a.to_s
-exit 1
+
+
 
 v1 = 0
 while (v1 < $n)
-  break if (vd[v1])
+  break if (vd[v1] > 0)
   v1 = v1 + 1
 end
 i = v1
 while (i < $n)
-  if (vd[i] % 2)
+  if (vd[i] % 2 == 0)
     v1 = i
     break
   end
@@ -143,16 +151,9 @@ end
 findEuler(v1)
 
 #wypisywanie zawartosci stosu
-if (vd[v1] % 2 == 1)
+if !($s.first == $s.last)
   puts "Sciezka Eulera"
 else
   puts "Cykl Eulera"
 end
-
-i = 0
-while (i < $sptr)
-  puts $s[i]
-  i = i + 1
-end
-puts " ===== "
 puts $s.to_s
